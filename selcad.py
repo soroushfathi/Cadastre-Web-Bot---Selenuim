@@ -21,9 +21,6 @@ from time import sleep
 from statics import username1 as username,password1 as password,province1 as province,area1 as area
 
 
-
-
-
 # from tkinter import Tk,Label,Entry,Frame
 # from PIL import Image,ImageTk
 # def get_captcha_from_user_using_tk(img):
@@ -72,14 +69,18 @@ driver = webdriver.Firefox(options=options,service=Service(executable_path='/hom
 def find_with_wait(xpath):
     return WebDriverWait(driver, timeout=DONT_CARE_WAIT).until(EC.element_to_be_clickable((By.XPATH, xpath)))
 
+
 def find_with_wait2(xpath):
     return WebDriverWait(driver, timeout=DONT_CARE_WAIT).until(EC.element_located_to_be_selected((By.XPATH, xpath)))
+
 
 def find_with_wait3(xpath):
     return WebDriverWait(driver, timeout=DONT_CARE_WAIT).until(EC.presence_of_element_located((By.XPATH, xpath)))
 
+
 def find_with_wait4(xpath):
     return WebDriverWait(driver, timeout=DONT_CARE_WAIT).until(EC.visibility_of_element_located((By.XPATH, xpath)))
+
 
 # url
 def get_cadastre_until_it_opens():
@@ -115,12 +116,16 @@ def login():
     # driver.find_element(By.XPATH, '//*[@id="ULogin1_txtSMSCode"]').send_keys(sms)
     # find_with_wait('//*[@id="ULogin1_btnSMSLogin"]').click()
     # driver.find_element(By.XPATH, '//*[@id="ULogin1_btnSMSLogin"]').click()
+
+
 login()
+
 
 WebDriverWait(driver, timeout=9999999999999).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ULogin1_BtnNewRequest"]')))
 
 
 driver.get("https://cadastre.mimt.gov.ir/Map/RegMap.aspx")
+
 
 def select_from_menu(xpath, item):
     find_with_wait(xpath).click()
@@ -132,6 +137,7 @@ def select_from_menu(xpath, item):
             elem.click()
             # driver.execute_script("arguments[0].click();", elem)
             break
+
 
 # step 1: select province
 def select_province():
@@ -145,7 +151,10 @@ def select_province():
             driver.refresh()
             select_from_menu('//*[@id="ctl00_ContentPlaceHolder1_CmbEstate_Input"]', province)
     sleep(TINY_WAIT)
+
+
 select_province()
+
 
 # step 2: mineral matrial
 # select group6
@@ -162,8 +171,11 @@ def select_mineral_material():
             select_province()
             select_from_menu('//*[@id="ctl00_ContentPlaceHolder1_CmbGroup_Input"]','گروه 6')
     sleep(TINY_WAIT)
+
+
 select_mineral_material()
-    
+
+
 def select_metal():
     while True:
         try:
@@ -190,7 +202,10 @@ def select_metal():
     find_with_wait('//*[@id="RadButton1_input"]').click()
     driver.switch_to.default_content()
     sleep(TINY_WAIT)
+
+
 select_metal()
+
 
 # step 3: insert points
 def insert_points(points):
@@ -214,7 +229,6 @@ def insert_points(points):
         yd.send_keys(point[3])
         ym.send_keys(point[4])
         ys.send_keys(point[5])
-        
         #darj button
         driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_Btn_AddPoint_input"]').click()
         # find_with_wait2('//*[@id="ctl00_ContentPlaceHolder1_Btn_AddPoint_input"]').click()
@@ -222,6 +236,7 @@ def insert_points(points):
         WebDriverWait(driver, timeout=IMPORTANT_WAIT).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'raDiv')))
         
     driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_BtnCalc_input"]').click()
+
 
 def insert_area():
     for points in area:
@@ -241,9 +256,8 @@ def insert_area():
             select_province()
             select_mineral_material()
             select_metal()
+
+
 insert_area()
-
-
 # tarsim again (delete old points using refresh)
 # tarsim_mahdoode = '//*[@id="ctl00_ContentPlaceHolder1_BtnA3_input"]'
-
