@@ -101,12 +101,12 @@ def login():
     find_with_wait('//*[@id="ULogin1_txt_Username"]').send_keys(username)
     driver.find_element(By.XPATH, '//*[@id="ULogin1_txt_Pass"]').send_keys(password)
     #captcha
-    captcha_element = find_with_wait4('//*[@id="ctl00_ULogin1_RadCaptcha1_CaptchaImageUP"]')
-    captcha_element.screenshot(captcha_element.id+'.png')
+    # captcha_element = find_with_wait4('//*[@id="ctl00_ULogin1_RadCaptcha1_CaptchaImageUP"]')
+    # captcha_element.screenshot(captcha_element.id+'.png')
     # captcha = get_captcha_from_user_using_tk(captcha_element.id+'.png')
     # driver.find_element(By.XPATH, '//*[@id="ctl00_ULogin1_RadCaptcha1_CaptchaTextBox"]').send_keys(captcha)
 
-    driver.find_element(By.XPATH, '//*[@id="ULogin1_btnLogin1"]').click()
+    # driver.find_element(By.XPATH, '//*[@id="ULogin1_btnLogin1"]').click()
 
     # sms
     # sms=get_sms()
@@ -114,8 +114,12 @@ def login():
     # find_with_wait('//*[@id="ULogin1_txtSMSCode"]').send_keys(get_sms())
     # driver.find_element(By.XPATH, '//*[@id="ULogin1_txtSMSCode"]').send_keys(sms)
     # find_with_wait('//*[@id="ULogin1_btnSMSLogin"]').click()
-    driver.find_element(By.XPATH, '//*[@id="ULogin1_btnSMSLogin"]').click()
+    # driver.find_element(By.XPATH, '//*[@id="ULogin1_btnSMSLogin"]').click()
 login()
+
+WebDriverWait(driver, timeout=0).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ULogin1_BtnNewRequest"]')))
+
+
 driver.get("https://cadastre.mimt.gov.ir/Map/RegMap.aspx")
 
 def select_from_menu(xpath, item):
