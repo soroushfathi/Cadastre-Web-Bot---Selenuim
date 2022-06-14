@@ -92,7 +92,7 @@ def get_cadastre_until_it_opens():
         except (TimeoutException, UnexpectedAlertPresentException):
             # driver.get("https://cadastre.mimt.gov.ir/")
             driver.refresh()
-# get_cadastre_until_it_opens()
+get_cadastre_until_it_opens()
 
 def get_sms():
     return subprocess.Popen(['nc','-ln','0.0.0.0','38587'], stdout=subprocess.PIPE).communicate()[0].decode()
