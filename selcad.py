@@ -24,37 +24,37 @@ from statics import username1 as username,password1 as password,province1 as pro
 
 
 
-from tkinter import Tk,Label,Entry,Frame
-from PIL import Image,ImageTk
-def get_captcha_from_user_using_tk(img):
-    global user_input
-    ws = Tk()
-    ws.title('captcha')
-    img = Image.open(img)
-    resize_img = img.resize((400,140))
-    img = ImageTk.PhotoImage(resize_img)
-
-    frame = Frame(ws)
-    frame.pack()
-
-    Label(
-        frame,
-        image=img
-    ).pack()
-
-    entry = Entry(frame) 
-    entry.pack()
-    entry.focus_set()
-
-    def callback(event):
-        global user_input
-        user_input = entry.get()
-        ws.destroy()
-
-    ws.bind('<Return>', callback)
-
-    ws.mainloop()
-    return user_input
+# from tkinter import Tk,Label,Entry,Frame
+# from PIL import Image,ImageTk
+# def get_captcha_from_user_using_tk(img):
+#     global user_input
+#     ws = Tk()
+#     ws.title('captcha')
+#     img = Image.open(img)
+#     resize_img = img.resize((400,140))
+#     img = ImageTk.PhotoImage(resize_img)
+#
+#     frame = Frame(ws)
+#     frame.pack()
+#
+#     Label(
+#         frame,
+#         image=img
+#     ).pack()
+#
+#     entry = Entry(frame) 
+#     entry.pack()
+#     entry.focus_set()
+#
+#     def callback(event):
+#         global user_input
+#         user_input = entry.get()
+#         ws.destroy()
+#
+#     ws.bind('<Return>', callback)
+#
+#     ws.mainloop()
+#     return user_input
 
     
 IMPORTANT_WAIT=50
