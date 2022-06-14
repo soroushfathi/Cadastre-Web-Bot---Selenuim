@@ -117,7 +117,7 @@ def login():
     # driver.find_element(By.XPATH, '//*[@id="ULogin1_btnSMSLogin"]').click()
 login()
 
-WebDriverWait(driver, timeout=0).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ULogin1_BtnNewRequest"]')))
+WebDriverWait(driver, timeout=0).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ULogin1_BtnNewRequest"]')))
 
 
 driver.get("https://cadastre.mimt.gov.ir/Map/RegMap.aspx")
