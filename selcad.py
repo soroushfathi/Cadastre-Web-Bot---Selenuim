@@ -65,6 +65,7 @@ TINY_WAIT=0.05
     
 options = Options()
 options.page_load_strategy = 'eager'
+#TODO : chromium
 driver = webdriver.Firefox(options=options,service=Service(executable_path='/home/gui/selcad/geckodriver'))
 
 
@@ -91,7 +92,7 @@ def get_cadastre_until_it_opens():
         except (TimeoutException, UnexpectedAlertPresentException):
             # driver.get("https://cadastre.mimt.gov.ir/")
             driver.refresh()
-get_cadastre_until_it_opens()
+# get_cadastre_until_it_opens()
 
 def get_sms():
     return subprocess.Popen(['nc','-ln','0.0.0.0','38587'], stdout=subprocess.PIPE).communicate()[0].decode()
@@ -114,7 +115,7 @@ def login():
     driver.find_element(By.XPATH, '//*[@id="ULogin1_txtSMSCode"]').send_keys(sms)
     # find_with_wait('//*[@id="ULogin1_btnSMSLogin"]').click()
     driver.find_element(By.XPATH, '//*[@id="ULogin1_btnSMSLogin"]').click()
-login()
+# login()
 driver.get("https://cadastre.mimt.gov.ir/Map/RegMap.aspx")
 
 def select_from_menu(xpath, item):
