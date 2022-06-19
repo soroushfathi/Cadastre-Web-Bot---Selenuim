@@ -1,25 +1,24 @@
-
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import (
-        TimeoutException,
-        UnexpectedAlertPresentException,
-        ElementClickInterceptedException
+    TimeoutException,
+    UnexpectedAlertPresentException,
+    ElementClickInterceptedException
 )
 import subprocess
 from time import sleep
+import sys
+from statics import areas, province1 as province
 
-
-
-
-from statics import username1 as username,password1 as password,province1 as province,area1 as area
-
+username_index = int(sys.argv[1])
+area_index = int(sys.argv[2])
+debug_port = int(sys.argv[3])
 
 # from tkinter import Tk,Label,Entry,Frame
 # from PIL import Image,ImageTk
@@ -39,7 +38,7 @@ from statics import username1 as username,password1 as password,province1 as pro
 #         image=img
 #     ).pack()
 #
-#     entry = Entry(frame) 
+#     entry = Entry(frame)
 #     entry.pack()
 #     entry.focus_set()
 #
@@ -53,17 +52,17 @@ from statics import username1 as username,password1 as password,province1 as pro
 #     ws.mainloop()
 #     return user_input
 
-    
-IMPORTANT_WAIT=50
-IMPORTANT_TINY_WAIT=30
-DONT_CARE_WAIT=850
-TINY_WAIT=0.05
 
-    
+# TODO
+IMPORTANT_WAIT = 50
+IMPORTANT_TINY_WAIT = 30
+DONT_CARE_WAIT = 9999999999
+TINY_WAIT = 0.05
+
 options = Options()
 options.page_load_strategy = 'eager'
-#TODO : chromium
-driver = webdriver.Firefox(options=options,service=Service(executable_path='/home/gui/selcad/geckodriver'))
+options.add_experimental_option("debuggerAddress", f"127.0.0.1:{debug_port}")
+driver = webdriver.Chrome(options=options, service=Service(executable_path='/home/gui/selcad/chromedriver'))
 
 
 def find_with_wait(xpath):
@@ -88,20 +87,30 @@ def get_cadastre_until_it_opens():
     # refresh until we find username box
     while True:
         try:
-            WebDriverWait(driver, timeout=0.5).until(EC.presence_of_element_located((By.XPATH,'//*[@id="ULogin1_txt_Username"]')))
+            WebDriverWait(driver, timeout=0.5).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="ULogin1_txt_Username"]')))
             break
         except (TimeoutException, UnexpectedAlertPresentException):
             # driver.get("https://cadastre.mimt.gov.ir/")
             driver.refresh()
-get_cadastre_until_it_opens()
+
+
+# get_cadastre_until_it_opens()
+
 
 def get_sms():
-    return subprocess.Popen(['nc','-ln','0.0.0.0','38587'], stdout=subprocess.PIPE).communicate()[0].decode()
+    return subprocess.Popen(['nc', '-ln', '0.0.0.0', '38587'], stdout=subprocess.PIPE).communicate()[0].decode()
+
+
 # login
 def login():
     find_with_wait('//*[@id="ULogin1_txt_Username"]').send_keys(username)
     driver.find_element(By.XPATH, '//*[@id="ULogin1_txt_Pass"]').send_keys(password)
-    #captcha
+
+    WebDriverWait(driver, timeout=DONT_CARE_WAIT).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="ULogin1_BtnNewRequest"]')))
+
+    # captcha
     # captcha_element = find_with_wait4('//*[@id="ctl00_ULogin1_RadCaptcha1_CaptchaImageUP"]')
     # captcha_element.screenshot(captcha_element.id+'.png')
     # captcha = get_captcha_from_user_using_tk(captcha_element.id+'.png')
@@ -118,20 +127,18 @@ def login():
     # driver.find_element(By.XPATH, '//*[@id="ULogin1_btnSMSLogin"]').click()
 
 
-login()
+# login()
 
 
-WebDriverWait(driver, timeout=9999999999999).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ULogin1_BtnNewRequest"]')))
-
-
+# everything starts from here. >
 driver.get("https://cadastre.mimt.gov.ir/Map/RegMap.aspx")
 
 
 def select_from_menu(xpath, item):
     find_with_wait(xpath).click()
-    item_list=find_with_wait(xpath[:-7]+'DropDown"]/div/ul').find_elements(By.TAG_NAME,'li')
+    item_list = find_with_wait(xpath[:-7] + 'DropDown"]/div/ul').find_elements(By.TAG_NAME, 'li')
     for elem in item_list:
-        if elem.get_attribute('innerHTML')==item:
+        if elem.get_attribute('innerHTML') == item:
             #  todo: advance wait
             sleep(TINY_WAIT)
             elem.click()
@@ -145,7 +152,8 @@ def select_province():
     # refresh if we stuck
     while True:
         try:
-            WebDriverWait(driver, timeout=IMPORTANT_WAIT).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'raDiv')))
+            WebDriverWait(driver, timeout=IMPORTANT_WAIT).until(
+                EC.invisibility_of_element_located((By.CLASS_NAME, 'raDiv')))
             break
         except TimeoutException:
             driver.refresh()
@@ -159,17 +167,18 @@ select_province()
 # step 2: mineral matrial
 # select group6
 def select_mineral_material():
-    select_from_menu('//*[@id="ctl00_ContentPlaceHolder1_CmbGroup_Input"]','گروه 6')
+    select_from_menu('//*[@id="ctl00_ContentPlaceHolder1_CmbGroup_Input"]', 'گروه 6')
     # refresh if we stuck
     while True:
         try:
-            WebDriverWait(driver, timeout=IMPORTANT_WAIT).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'raDiv')))
+            WebDriverWait(driver, timeout=IMPORTANT_WAIT).until(
+                EC.invisibility_of_element_located((By.CLASS_NAME, 'raDiv')))
             break
         except TimeoutException:
             driver.refresh()
             # TODO: idk this is needed or not
             select_province()
-            select_from_menu('//*[@id="ctl00_ContentPlaceHolder1_CmbGroup_Input"]','گروه 6')
+            select_from_menu('//*[@id="ctl00_ContentPlaceHolder1_CmbGroup_Input"]', 'گروه 6')
     sleep(TINY_WAIT)
 
 
@@ -189,7 +198,8 @@ def select_metal():
     # select kansar felezi (but refresh if we stuck)
     while True:
         try:
-            driver.switch_to.frame(WebDriverWait(driver,timeout=IMPORTANT_WAIT).until(EC.visibility_of_element_located((By.TAG_NAME,"iframe"))))
+            driver.switch_to.frame(WebDriverWait(driver, timeout=IMPORTANT_WAIT).until(
+                EC.visibility_of_element_located((By.TAG_NAME, "iframe"))))
             break
         except TimeoutException:
             driver.refresh()
@@ -222,34 +232,36 @@ def insert_points(points):
         yd.clear()
         ym.clear()
         ys.clear()
-        
+
         xd.send_keys(point[0])
         xm.send_keys(point[1])
         xs.send_keys(point[2])
         yd.send_keys(point[3])
         ym.send_keys(point[4])
         ys.send_keys(point[5])
-        #darj button
+        # darj button
         driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_Btn_AddPoint_input"]').click()
         # find_with_wait2('//*[@id="ctl00_ContentPlaceHolder1_Btn_AddPoint_input"]').click()
         sleep(TINY_WAIT)
-        WebDriverWait(driver, timeout=IMPORTANT_WAIT).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'raDiv')))
-        
+        WebDriverWait(driver, timeout=IMPORTANT_WAIT).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, 'raDiv')))
+
     driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_BtnCalc_input"]').click()
 
 
 def insert_area():
-    for points in area:
+    for points in areas[username_index]:
         insert_points(points)
         try:
             sleep(TINY_WAIT)
             # captcha
-            captcha_element = WebDriverWait(driver, timeout=IMPORTANT_TINY_WAIT).until(EC.visibility_of_element_located((By.XPATH,'//*[@id="ctl00_ContentPlaceHolder1_RadCaptcha1_CaptchaImage"]')))
-            # captcha_element = find_with_wait4('//*[@id="ctl00_ContentPlaceHolder1_RadCaptcha1_CaptchaImage"]')
-            captcha_element.screenshot(captcha_element.id+'.png')
-            captcha = get_captcha_from_user_using_tk(captcha_element.id+'.png')
-            driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_RadCaptcha1_CaptchaTextBox"]').send_keys(captcha)
-            driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_BtnSaveMine_input"]').click()
+            captcha_element = WebDriverWait(driver, timeout=IMPORTANT_TINY_WAIT).until(EC.visibility_of_element_located(
+                (By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_RadCaptcha1_CaptchaImage"]')))
+            # (deprecate)captcha_element = find_with_wait4('//*[@id="ctl00_ContentPlaceHolder1_RadCaptcha1_CaptchaImage"]')
+            # captcha_element.screenshot(captcha_element.id+'.png')
+            # captcha = get_captcha_from_user_using_tk(captcha_element.id+'.png')
+            # driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_RadCaptcha1_CaptchaTextBox"]').send_keys(captcha)
+            # driver.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_BtnSaveMine_input"]').click()
             break
         except:
             driver.refresh()
@@ -258,6 +270,8 @@ def insert_area():
             select_metal()
 
 
-insert_area()
+insert_points(areas[username_index][area_index])
+
+# insert_area()
 # tarsim again (delete old points using refresh)
 # tarsim_mahdoode = '//*[@id="ctl00_ContentPlaceHolder1_BtnA3_input"]'
